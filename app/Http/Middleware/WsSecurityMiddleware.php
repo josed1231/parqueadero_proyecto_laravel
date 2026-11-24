@@ -13,11 +13,11 @@ class WsSecurityMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Obtener el token de seguridad desde el Header HTTP
+        // Obtener el token de seguridad desde el Header HTTP (Soporta ambos formatos)
         $securityToken = $request->header('X-WS-Security-Token') ?? $request->header('Authorization');
 
-        // Validar si se envió el token
-        if (!$securityToken) {
+        // Validar si se envió el token en la petición
+        if (! $securityToken) {
             return response()->json([
                 'error' => 'Acceso Denegado: Header WS-Security-Token faltante.',
                 'code' => 401
@@ -27,10 +27,10 @@ class WsSecurityMiddleware
         // Limpiar prefijo 'Bearer ' si se envía mediante Authorization Header
         $token = str_replace('Bearer ', '', $securityToken);
 
-        // Definir token maestro/esperado (o consultar en DB)
+        // Obtener el token maestro definido en el archivo .env
         $validToken = env('WS_SECURITY_TOKEN', 'token_seguridad_parqueadero_64bits_secret_key_2026_cotecnova_app');
 
-        // Validar coincidencia del Token de Seguridad
+        // Validar coincidencia exacta del Token de Seguridad
         if ($token !== $validToken) {
             return response()->json([
                 'error' => 'Acceso Denegado: Token WS-Security inválido o expirado.',

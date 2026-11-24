@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="ParqueaderoService"
+    targetNamespace="urn:ParqueaderoService"
+    xmlns:tns="urn:ParqueaderoService"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+    <!-- Tipos y Mensajes -->
+    <message name="LoginServiceRequest">
+        <part name="email" type="xsd:string"/>
+        <part name="password" type="xsd:string"/>
+    </message>
+    <message name="LoginServiceResponse">
+        <part name="return" type="xsd:string"/>
+    </message>
+
+    <message name="registrarEspacioRequest">
+        <part name="numero" type="xsd:string"/>
+        <part name="tipo" type="xsd:string"/>
+        <part name="estado" type="xsd:string"/>
+    </message>
+    <message name="registrarEspacioResponse">
+        <part name="return" type="xsd:string"/>
+    </message>
+
+    <message name="actualizarEspacioRequest">
+        <part name="id" type="xsd:int"/>
+        <part name="estado" type="xsd:string"/>
+    </message>
+    <message name="actualizarEspacioResponse">
+        <part name="return" type="xsd:string"/>
+    </message>
+
+    <message name="consultarEspacioRequest">
+        <part name="id" type="xsd:int"/>
+    </message>
+    <message name="consultarEspacioResponse">
+        <part name="return" type="xsd:string"/>
+    </message>
+
+    <message name="listarEspaciosRequest"/>
+    <message name="listarEspaciosResponse">
+        <part name="return" type="xsd:string"/>
+    </message>
+
+    <message name="registrarIngresoRequest">
+        <part name="placa" type="xsd:string"/>
+        <part name="tipo_vehiculo" type="xsd:string"/>
+        <part name="espacio_id" type="xsd:int"/>
+    </message>
+    <message name="registrarIngresoResponse">
+        <part name="return" type="xsd:string"/>
+    </message>
+
+    <message name="consultarIngresosRequest"/>
+    <message name="consultarIngresosResponse">
+        <part name="return" type="xsd:string"/>
+    </message>
+
+    <!-- Port Type -->
+    <portType name="ParqueaderoPortType">
+        <operation name="LoginService">
+            <input message="tns:LoginServiceRequest"/>
+            <output message="tns:LoginServiceResponse"/>
+        </operation>
+        <operation name="registrarEspacio">
+            <input message="tns:registrarEspacioRequest"/>
+            <output message="tns:registrarEspacioResponse"/>
+        </operation>
+        <operation name="actualizarEspacio">
+            <input message="tns:actualizarEspacioRequest"/>
+            <output message="tns:actualizarEspacioResponse"/>
+        </operation>
+        <operation name="consultarEspacio">
+            <input message="tns:consultarEspacioRequest"/>
+            <output message="tns:consultarEspacioResponse"/>
+        </operation>
+        <operation name="listarEspacios">
+            <input message="tns:listarEspaciosRequest"/>
+            <output message="tns:listarEspaciosResponse"/>
+        </operation>
+        <operation name="registrarIngreso">
+            <input message="tns:registrarIngresoRequest"/>
+            <output message="tns:registrarIngresoResponse"/>
+        </operation>
+        <operation name="consultarIngresos">
+            <input message="tns:consultarIngresosRequest"/>
+            <output message="tns:consultarIngresosResponse"/>
+        </operation>
+    </portType>
+
+    <!-- Binding -->
+    <binding name="ParqueaderoServiceBinding" type="tns:ParqueaderoPortType">
+        <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <operation name="LoginService">
+            <soap:operation soapAction="urn:ParqueaderoService#LoginService"/>
+            <input><soap:body use="encoded" namespace="urn:ParqueaderoService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+            <output><soap:body use="encoded" namespace="urn:ParqueaderoService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+        </operation>
+
+        <operation name="registrarEspacio">
+            <soap:operation soapAction="urn:ParqueaderoService#registrarEspacio"/>
+            <input><soap:body use="encoded" namespace="urn:ParqueaderoService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+            <output><soap:body use="encoded" namespace="urn:ParqueaderoService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+        </operation>
+
+        <operation name="actualizarEspacio">
+            <soap:operation soapAction="urn:ParqueaderoService#actualizarEspacio"/>
+            <input><soap:body use="encoded" namespace="urn:ParqueaderoService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+            <output><soap:body use="encoded" namespace="urn:ParqueaderoService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+        </operation>
+
+        <operation name="consultarEspacio">
+            <soap:operation soapAction="urn:ParqueaderoService#consultarEspacio"/>
+            <input><soap:body use="encoded" namespace="urn:ParqueaderoService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+            <output><soap:body use="encoded" namespace="urn:ParqueaderoService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+        </operation>
+
+        <operation name="listarEspacios">
+            <soap:operation soapAction="urn:ParqueaderoService#listarEspacios"/>
+            <input><soap:body use="encoded" namespace="urn:ParqueaderoService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+            <output><soap:body use="encoded" namespace="urn:ParqueaderoService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+        </operation>
+
+        <operation name="registrarIngreso">
+            <soap:operation soapAction="urn:ParqueaderoService#registrarIngreso"/>
+            <input><soap:body use="encoded" namespace="urn:ParqueaderoService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+            <output><soap:body use="encoded" namespace="urn:ParqueaderoService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+        </operation>
+
+        <operation name="consultarIngresos">
+            <soap:operation soapAction="urn:ParqueaderoService#consultarIngresos"/>
+            <input><soap:body use="encoded" namespace="urn:ParqueaderoService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+            <output><soap:body use="encoded" namespace="urn:ParqueaderoService" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+        </operation>
+    </binding>
+
+    <!-- Service -->
+    <service name="ParqueaderoService">
+        <port name="ParqueaderoPort" binding="tns:ParqueaderoServiceBinding">
+            <soap:address location="http://127.0.0.1:8000/api/soap"/>
+        </port>
+    </service>
+</definitions>

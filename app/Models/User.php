@@ -11,30 +11,31 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    /**
+     * Campos asignables masivamente.
+     */
     protected $fillable = [
         'name',
         'email',
-        'telefono',
-        'celular',
         'password',
     ];
 
+    /**
+     * Campos ocultos al serializar en JSON/XML.
+     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    /**
+     * Casts de atributos.
+     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    // Relación con Vehículos
-    public function vehiculos()
-    {
-        return $this->hasMany(Vehiculo::class);
     }
 }

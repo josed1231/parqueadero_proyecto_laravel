@@ -7,43 +7,60 @@ use App\Http\Controllers\EspacioController;
 use App\Http\Controllers\IngresoController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\PagoController;
+use App\Http\Controllers\SoapController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes - Protegidas por WS-Security Token Header
-|--------------------------------------------------------------------------
-*/
+// 1. RUTAS PÚBLICAS
+Route::post('/login', [UserController::class, 'login']);
+Route::post('/register', [UserController::class, 'register']);
 
-Route::middleware(['ws.security'])->group(function () {
+// RUTA SOAP (valida el token y el rol internamente en SoapController)
+Route::any('/soap', [SoapController::class, 'server']);
 
-    // 1. Usuarios / Clientes
-    Route::post('/users', [UserController::class, 'store']);
-    Route::get('/users', [UserController::class, 'index']);
-    Route::get('/users/{id}', [UserController::class, 'show']);
+// 2. RUTAS REST PROTEGIDAS CON BEARER TOKEN (Sanctum -> 401 si no hay token válido)
+Route::middleware('auth:sanctum')->group(function () {
 
-    // 2. Vehículos
+    // Sesión actual
+    Route::get('/me', [UserController::class, 'me']);
+    Route::post('/logout', [UserController::class, 'logout']);
+
+    // --- MÓDULO DE FACTURACIÓN Y CONTROL DE SALIDA ---
+
+    // consultarFactura: permitido para los 4 perfiles
+    Route::get('/facturas/{id}', [FacturaController::class, 'show']);
+
+    // generarFactura: administrador, operador_cabina
+    Route::post('/facturas', [FacturaController::class, 'store'])
+        ->middleware('can.generate.invoices');
+
+    // listarFacturas y registrarPagoSalida: administrador, cajero
+    Route::middleware('can.process.payments')->group(function () {
+        Route::get('/facturas', [FacturaController::class, 'index']);
+        Route::post('/pagos', [PagoController::class, 'store']);
+    });
+
+    // consultarFacturaPorIngreso: administrador, operador_cabina, supervisor_salida
+    Route::get('/ingresos/{ingresoId}/factura', [FacturaController::class, 'facturaPorIngreso'])
+        ->middleware('can.verify.exit');
+
+    // --- ADMINISTRACIÓN GENERAL (Solo administrador) ---
+    Route::middleware('is.admin')->group(function () {
+        Route::post('/users', [UserController::class, 'store']);
+        Route::get('/users', [UserController::class, 'index']);
+        Route::get('/users/{id}', [UserController::class, 'show']);
+
+        Route::post('/espacios', [EspacioController::class, 'store']);
+        Route::put('/espacios/{id}', [EspacioController::class, 'update']);
+    });
+
+    // Consultas y operación base del parqueadero
+    Route::get('/espacios', [EspacioController::class, 'index']);
+    Route::get('/espacios/{id}', [EspacioController::class, 'show']);
+
     Route::post('/vehiculos', [VehiculoController::class, 'store']);
     Route::get('/vehiculos', [VehiculoController::class, 'index']);
     Route::get('/vehiculos/{id}', [VehiculoController::class, 'show']);
 
-    // 3. Espacios
-    Route::post('/espacios', [EspacioController::class, 'store']);
-    Route::get('/espacios', [EspacioController::class, 'index']);
-    Route::get('/espacios/{id}', [EspacioController::class, 'show']);
-    Route::put('/espacios/{id}', [EspacioController::class, 'update']);
-
-    // 4. Ingresos
     Route::post('/ingresos', [IngresoController::class, 'store']);
     Route::get('/ingresos', [IngresoController::class, 'index']);
     Route::get('/ingresos/{id}', [IngresoController::class, 'show']);
-
-    // 5. Facturas
-    Route::post('/facturas', [FacturaController::class, 'store']);
-    Route::get('/facturas', [FacturaController::class, 'index']);
-    Route::get('/facturas/{id}', [FacturaController::class, 'show']);
-    Route::get('/ingresos/{ingresoId}/factura', [FacturaController::class, 'facturaPorIngreso']);
-
-    // 6. Pagos
-    Route::post('/pagos', [PagoController::class, 'store']);
-
 });

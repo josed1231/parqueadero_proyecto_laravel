@@ -3,7 +3,12 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Http\Middleware\WsSecurityMiddleware;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\Request;
+use App\Http\Middleware\IsAdministrator;
+use App\Http\Middleware\CanGenerateInvoices;
+use App\Http\Middleware\CanProcessPayments;
+use App\Http\Middleware\CanVerifyExit;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,12 +17,20 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware) {
-        // Registrar el alias del middleware WS-Security
+    ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'ws.security' => WsSecurityMiddleware::class,
+            'is.admin'              => IsAdministrator::class,
+            'can.generate.invoices' => CanGenerateInvoices::class,
+            'can.process.payments'  => CanProcessPayments::class,
+            'can.verify.exit'       => CanVerifyExit::class,
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions) {
-        //
+    ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'error' => 'No autenticado. Token Bearer faltante o inválido.'
+                ], 401);
+            }
+        });
     })->create();
